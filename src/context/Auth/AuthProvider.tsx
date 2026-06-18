@@ -71,7 +71,9 @@ export const AuthProvider = (props: IAuthProviderProps) => {
   }
   function logout() {
     setIsAuth(false);
-    localStorage.clear();
+    localStorage.removeItem('token');
+    localStorage.removeItem("login");
+    localStorage.removeItem("name");
   }
   const value = {
     error,

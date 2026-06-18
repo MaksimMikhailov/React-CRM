@@ -13,6 +13,7 @@ export interface ITaskData {
   status: string;
   description: string;
   date: string;
+  _id: string;
 }
 const baseUrl = "https://wedev-api.sky.pro/api/";
 const token = `Bearer ${localStorage.getItem("token")}`;

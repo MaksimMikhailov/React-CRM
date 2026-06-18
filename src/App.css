@@ -19,7 +19,6 @@ button,
 ._btn {
   cursor: pointer;
   outline: none;
-
 }
 
 ul li {
@@ -774,7 +773,12 @@ body {
   color: #94a6be;
   letter-spacing: 0.2px;
 }
-
+.success {
+  background-color: green;
+}
+.danger {
+  background-color: red;
+}
 @media screen and (max-width: 1200px) {
   .main__block {
     width: 100%;

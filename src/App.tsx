@@ -12,7 +12,8 @@ import { useContext, useEffect } from "react";
 import { getTasks } from "./services/api";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { TasksContext } from "./context/Tasks/TasksContext";
-
+import "react-notifications-component/dist/theme.css";
+import { ReactNotifications } from "react-notifications-component";
 function App() {
   const { tasks, setTasks } = useContext(TasksContext)!;
   useEffect(() => {
@@ -25,6 +26,7 @@ function App() {
     <>
       <Wrapper>
         <GlobalStyles />
+        <ReactNotifications  />
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route

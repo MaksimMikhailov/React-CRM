@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { TasksContext } from "./TasksContext";
 import type { ITaskInfo } from "../../types";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   addTasks,
   deleteTasks,
   editTasks,
   type ITaskData,
 } from "../../services/api";
+import { Store } from "react-notifications-component";
+import { CustomNotification } from "../../components/CustomNotification";
 
 interface ITasksProviderProps {
   children: React.ReactNode;
@@ -26,14 +28,37 @@ export const TasksProvider = (props: ITasksProviderProps) => {
   ) {
     e.preventDefault();
     setError("");
+
     try {
       if (!taskInfo.title || !taskInfo.description) {
         throw new Error("Заполните все поля");
       }
-      navigate("/");
       setLoading(true);
       const addTask = await addTasks(taskInfo);
+      const id = addTask[addTask.length - 1]._id;
+      navigate("/");
       setTasks(addTask);
+      Store.addNotification({
+        content: () => (
+          <CustomNotification
+            message="Нажмите, чтобы перейти к задаче"
+            onclick={() => navigate(`/popbrowse/${id}`)}
+            ondissmiss={() => Store.removeNotification(id)}
+            title="Задача создана"
+            type="success"
+          />
+        ),
+        type: "success",
+        id,
+        insert: "top",
+        container: "top-right",
+        animationIn: ["animate__animated", "animate__fadeIn"],
+        animationOut: ["animate__animated", "animate__fadeOut"],
+        dismiss: {
+          duration: 5000,
+          onScreen: true,
+        },
+      });
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -46,11 +71,37 @@ export const TasksProvider = (props: ITasksProviderProps) => {
     id: string,
     setLoading: (loading: boolean) => void,
   ) {
+    const task = tasks.find((e) => e._id === id)!;
     setLoading(true);
     const newTasks = await deleteTasks(id);
     setTasks(newTasks);
     setLoading(false);
     navigate("/");
+    Store.addNotification({
+      content: () => (
+        <CustomNotification
+          message="Нажмите, чтобы отменить удаление"
+          onclick={() =>
+            addTasks(task).then((tasks) => {
+              setTasks(tasks);
+            })
+          }
+          ondissmiss={() => Store.removeNotification(id)}
+          title="Задача удалена"
+          type="danger"
+        />
+      ),
+      type: "success",
+      id,
+      insert: "top",
+      container: "top-right",
+      animationIn: ["animate__animated", "animate__fadeIn"],
+      animationOut: ["animate__animated", "animate__fadeOut"],
+      dismiss: {
+        duration: 5000,
+        onScreen: true,
+      },
+    });
   }
   async function saveTask(
     id: string,
@@ -62,6 +113,26 @@ export const TasksProvider = (props: ITasksProviderProps) => {
       const newTasks = await editTasks(id, newTask);
       setTasks(newTasks);
       navigate("/");
+      Store.addNotification({
+        content: () => (
+          <CustomNotification
+            message="Нажмите, чтобы перейти к задаче"
+            onclick={() => navigate(`/popbrowse/${id}`)}
+            ondissmiss={() => Store.removeNotification(id)}
+            title="Задача изменена"
+          />
+        ),
+        type: "success",
+        id,
+        insert: "top",
+        container: "top-right",
+        animationIn: ["animate__animated", "animate__fadeIn"],
+        animationOut: ["animate__animated", "animate__fadeOut"],
+        dismiss: {
+          duration: 5000,
+          onScreen: true,
+        },
+      });
     } catch (error) {
       console.log(error);
     } finally {
